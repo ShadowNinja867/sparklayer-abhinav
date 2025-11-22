@@ -3,6 +3,8 @@
   import type { TodoItem } from "./lib/types";
 
   let todos: TodoItem[] = $state([]);
+  let title = $state("");
+  let description = $state("");
 
   async function fetchTodos() {
     try {
@@ -16,6 +18,21 @@
     } catch (e) {
       console.error("Could not connect to server. Ensure it is running.", e);
     }
+  }
+
+  async function addTask() {
+    if (!title || !description) return;
+
+    await fetch("http://localhost:8080/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, description })
+    });
+
+    title = "";
+    description = "";
+
+    fetchTodos();
   }
 
   // Initially fetch todos on page load
@@ -36,10 +53,10 @@
   </div>
 
   <h2 class="todo-list-form-header">Add a Todo</h2>
-  <form class="todo-list-form">
-    <input placeholder="Title" name="title" />
-    <input placeholder="Description" name="description" />
-    <button>Add Todo</button>
+  <form class="todo-list-form" onsubmit={e => { e.preventDefault(); addTask(); }}>  
+    <input placeholder="Title" bind:value={title} />
+    <input placeholder="Description" bind:value={description} />
+    <button type="submit">Add Todo</button>
   </form>
 </main>
 

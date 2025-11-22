@@ -13,7 +13,7 @@ var tasks = []Task{} // in-memory store
 
 func main() {
 	http.HandleFunc("/", taskHandler)
-	http.ListenAndServe(":5000", nil)
+	http.ListenAndServe(":8080", nil)
 }
 
 
@@ -21,6 +21,12 @@ func main() {
 func taskHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
+    w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == http.MethodOptions {
+		return
+	}
 
 	if r.Method == http.MethodGet {
 		json.NewEncoder(w).Encode(tasks)
